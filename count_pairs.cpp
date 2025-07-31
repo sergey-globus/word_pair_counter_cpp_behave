@@ -3,23 +3,23 @@
 #include <vector>
 #include <cctype>
 #include <windows.h>
-#include <cstdlib>   // для atoi()
+#include <cstdlib>   // РґР»СЏ atoi()
 
 using namespace std;
 
-// Функция для корректного приведения к нижнему регистру (включая русские буквы)
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ РїСЂРёРІРµРґРµРЅРёСЏ Рє РЅРёР¶РЅРµРјСѓ СЂРµРіРёСЃС‚СЂСѓ (РІРєР»СЋС‡Р°СЏ СЂСѓСЃСЃРєРёРµ Р±СѓРєРІС‹)
 string to_lower_win(const string& s) {
     string result;
     for (unsigned char c : s) {
-        // Русские заглавные буквы в CP1251
+        // Р СѓСЃСЃРєРёРµ Р·Р°РіР»Р°РІРЅС‹Рµ Р±СѓРєРІС‹ РІ CP1251
         if (c >= 192 && c <= 223) {
-            result += c + 32; // Преобразуем в строчные
+            result += c + 32; // РџСЂРµРѕР±СЂР°Р·СѓРµРј РІ СЃС‚СЂРѕС‡РЅС‹Рµ
         }
-        // Русские строчные уже в правильном регистре
+        // Р СѓСЃСЃРєРёРµ СЃС‚СЂРѕС‡РЅС‹Рµ СѓР¶Рµ РІ РїСЂР°РІРёР»СЊРЅРѕРј СЂРµРіРёСЃС‚СЂРµ
         else if (c >= 224 && c <= 255) {
             result += c;
         }
-        // Латинские буквы
+        // Р›Р°С‚РёРЅСЃРєРёРµ Р±СѓРєРІС‹
         else {
             result += tolower(c);
         }
@@ -27,11 +27,11 @@ string to_lower_win(const string& s) {
     return result;
 }
 
-// Разделяем файл на слова, для word1 и word2 считаем какие по порядку, возвращаем соответвствующие два списка с позициями
+// Р Р°Р·РґРµР»СЏРµРј С„Р°Р№Р» РЅР° СЃР»РѕРІР°, РґР»СЏ word1 Рё word2 СЃС‡РёС‚Р°РµРј РєР°РєРёРµ РїРѕ РїРѕСЂСЏРґРєСѓ, РІРѕР·РІСЂР°С‰Р°РµРј СЃРѕРѕС‚РІРµС‚РІСЃС‚РІСѓСЋС‰РёРµ РґРІР° СЃРїРёСЃРєР° СЃ РїРѕР·РёС†РёСЏРјРё
 void index_words(ifstream& file, const string& word1, const string& word2, vector<int> *pos_word1, vector<int> *pos_word2) {
     string currentWord;
     
-    // Нормализуем слова для сравнения
+    // РќРѕСЂРјР°Р»РёР·СѓРµРј СЃР»РѕРІР° РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ
     string lower_word1 = to_lower_win(word1);
     string lower_word2 = to_lower_win(word2);
 
@@ -40,19 +40,19 @@ void index_words(ifstream& file, const string& word1, const string& word2, vecto
     while (file.get(c)) {
         unsigned char uc = static_cast<unsigned char>(c);
         
-        // Если символ - буква (латинская или русская в CP1251)
+        // Р•СЃР»Рё СЃРёРјРІРѕР» - Р±СѓРєРІР° (Р»Р°С‚РёРЅСЃРєР°СЏ РёР»Рё СЂСѓСЃСЃРєР°СЏ РІ CP1251)
         if (isalpha(c) || (uc >= 192 && uc <= 255)) {
             currentWord += to_lower_win(string(1, c));
         } 
-        // Если встретили разделитель и текущее слово не пустое
+        // Р•СЃР»Рё РІСЃС‚СЂРµС‚РёР»Рё СЂР°Р·РґРµР»РёС‚РµР»СЊ Рё С‚РµРєСѓС‰РµРµ СЃР»РѕРІРѕ РЅРµ РїСѓСЃС‚РѕРµ
         else if (!currentWord.empty()) {
             if (currentWord == lower_word1) {
                 pos_word1->push_back(counter);
-                // cout << word1 << " найдено на позиции " << counter << "\n";
+                // cout << word1 << " РЅР°Р№РґРµРЅРѕ РЅР° РїРѕР·РёС†РёРё " << counter << "\n";
             }
             if (currentWord == lower_word2) {
                 pos_word2->push_back(counter);
-                // cout << word2 << " найдено на позиции " << counter << "\n";
+                // cout << word2 << " РЅР°Р№РґРµРЅРѕ РЅР° РїРѕР·РёС†РёРё " << counter << "\n";
             }
             
             currentWord.clear();
@@ -60,15 +60,15 @@ void index_words(ifstream& file, const string& word1, const string& word2, vecto
         }
     }
 
-    // Обработка последнего слова
+    // РћР±СЂР°Р±РѕС‚РєР° РїРѕСЃР»РµРґРЅРµРіРѕ СЃР»РѕРІР°
     if (!currentWord.empty()) {
         if (currentWord == lower_word1) {
             pos_word1->push_back(counter);
-            // cout << word1 << " найдено на позиции " << counter << "\n";
+            // cout << word1 << " РЅР°Р№РґРµРЅРѕ РЅР° РїРѕР·РёС†РёРё " << counter << "\n";
         }
         if (currentWord == lower_word2) {
             pos_word2->push_back(counter);
-            // cout << word2 << " найдено на позиции " << counter << "\n";
+            // cout << word2 << " РЅР°Р№РґРµРЅРѕ РЅР° РїРѕР·РёС†РёРё " << counter << "\n";
         }
     }
 }
@@ -80,16 +80,16 @@ int count_unique_pairs(vector<int>& pos_word1, vector<int>& pos_word2, int max_d
     
     while (i < n && j < m) {
         if (pos_word1[i] < pos_word2[j]) {
-            // Проверяем расстояние
+            // РџСЂРѕРІРµСЂСЏРµРј СЂР°СЃСЃС‚РѕСЏРЅРёРµ
             if (pos_word2[j] - pos_word1[i] - 1 <= max_distance) {
-                count++;  // Нашли пару (i, j)
-                i++;      // Переходим к следующему word1
-                j++;      // Переходим к следующему word2
+                count++;  // РќР°С€Р»Рё РїР°СЂСѓ (i, j)
+                i++;      // РџРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ word1
+                j++;      // РџРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ word2
             } else {
-                i++;      // Расстояние слишком большое, пробуем следующий word1
+                i++;      // Р Р°СЃСЃС‚РѕСЏРЅРёРµ СЃР»РёС€РєРѕРј Р±РѕР»СЊС€РѕРµ, РїСЂРѕР±СѓРµРј СЃР»РµРґСѓСЋС‰РёР№ word1
             }
         } else {
-            j++;          // word2 слишком рано, пробуем следующий word2
+            j++;          // word2 СЃР»РёС€РєРѕРј СЂР°РЅРѕ, РїСЂРѕР±СѓРµРј СЃР»РµРґСѓСЋС‰РёР№ word2
         }
     }
     
@@ -97,43 +97,43 @@ int count_unique_pairs(vector<int>& pos_word1, vector<int>& pos_word2, int max_d
 }
 
 int main(int argc, char* argv[]) {
-    // Устанавливаем кодировку консоли Windows
+    // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєРѕРґРёСЂРѕРІРєСѓ РєРѕРЅСЃРѕР»Рё Windows
     SetConsoleOutputCP(1251);
 
 
     if (argc < 5) {
-        cerr << "Использование: " << argv[0] << " файл слово1 слово2 максимальное_расстояние\n";
+        cerr << "РСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ: " << argv[0] << " С„Р°Р№Р» СЃР»РѕРІРѕ1 СЃР»РѕРІРѕ2 РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ_СЂР°СЃСЃС‚РѕСЏРЅРёРµ\n";
         SetConsoleOutputCP(866);
         return 1;
     }
 
     ifstream file(argv[1], ios::binary);
     if (!file) {
-        cerr << "Ошибка: не удалось открыть файл" << argv[1] << "'\n";
+        cerr << "РћС€РёР±РєР°: РЅРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»" << argv[1] << "'\n";
         SetConsoleOutputCP(866);
         return 2;
     }
 
-    // Проверка что argv[4] - число
+    // РџСЂРѕРІРµСЂРєР° С‡С‚Рѕ argv[4] - С‡РёСЃР»Рѕ
     try {
         int max_diff = stoi(argv[4]);
         if (max_diff < 0) throw invalid_argument("must be positive");
     } catch (...) {
-        cerr << "Ошибка: максимальное_расстояние должно быть целым положительным числом\n";
+        cerr << "РћС€РёР±РєР°: РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ_СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ С†РµР»С‹Рј РїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рј С‡РёСЃР»РѕРј\n";
         SetConsoleOutputCP(866);
         return 3;
     }
     int max_diff = stoi(argv[4]);
 
-    vector<int> pos_word1, pos_word2; // позиции слов (какие по счету слова в файле)
+    vector<int> pos_word1, pos_word2; // РїРѕР·РёС†РёРё СЃР»РѕРІ (РєР°РєРёРµ РїРѕ СЃС‡РµС‚Сѓ СЃР»РѕРІР° РІ С„Р°Р№Р»Рµ)
 
     index_words(file, argv[2], argv[3], &pos_word1, &pos_word2);
 
     int result = count_unique_pairs(pos_word1, pos_word2, max_diff);
 
-    cout << "Количество найденных пар: " << result << "\n";
+    cout << "РљРѕР»РёС‡РµСЃС‚РІРѕ РЅР°Р№РґРµРЅРЅС‹С… РїР°СЂ: " << result << "\n";
 
-    // Устанавливаем исходную кодировку консоли Windows
+    // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёСЃС…РѕРґРЅСѓСЋ РєРѕРґРёСЂРѕРІРєСѓ РєРѕРЅСЃРѕР»Рё Windows
     SetConsoleOutputCP(866);
     return 0;
 }
